@@ -1,0 +1,31 @@
+CREATE TABLE MODELKIT (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    brand VARCHAR(100) NOT NULL,
+    grade VARCHAR(100) NOT NULL,
+    scale VARCHAR(100) NOT NULL,
+    series VARCHAR(100) NOT NULL,
+    description VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE MODELKITIMAGES (
+    model_kit_id INT NOT NULL,
+    image VARCHAR(2000) NOT NULL
+);
+
+CREATE TABLE MODELKITPRICES (
+    model_kit_id INT NOT NULL,
+    retailer_id INT NOT NULL
+);
+
+CREATE TABLE MODELKITRETAILER (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    available BOOL NOT NULL,
+    sub_total_price DECIMAL NOT NULL,
+    tax_price DECIMAL NOT NULL,
+    total_price DECIMAL NOT NULL
+);
+
+
+
