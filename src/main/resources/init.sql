@@ -15,17 +15,13 @@ CREATE TABLE MODELKITIMAGES (
 
 CREATE TABLE MODELKITPRICES (
     model_kit_id INT NOT NULL,
-    retailer_id INT NOT NULL
-);
-
-CREATE TABLE MODELKITRETAILER (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    retailer_id INT NOT NULL,
+    PRIMARY KEY(model_kit_id, retailer_id),
     name VARCHAR(200) NOT NULL,
     available BOOL NOT NULL,
-    sub_total_price DECIMAL NOT NULL,
-    tax_price DECIMAL NOT NULL,
-    total_price DECIMAL NOT NULL
+    sub_total_price DECIMAL(10,2) NOT NULL,
+    tax_price DECIMAL(10,2) NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL
 );
-
 
 

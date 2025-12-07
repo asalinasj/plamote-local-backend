@@ -14,6 +14,10 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+.kotlin
+
+build/
+
 
 # External tool builders
 .externalToolBuilders/

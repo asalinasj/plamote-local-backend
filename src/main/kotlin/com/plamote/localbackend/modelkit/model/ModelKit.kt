@@ -8,6 +8,6 @@ data class ModelKit(
   val scale: String,
   val series: String,
   val description: String,
-  val images: List<String>,
-  val prices: ModelKitPrices
+  var images: MutableList<String> = mutableListOf(),
+  var prices: ModelKitPrices? = null
 )

@@ -3,6 +3,7 @@ package com.plamote.localbackend.modelkit.model
 import java.math.BigDecimal
 
 data class ModelKitPrices(
-  val bestTotalPrice: BigDecimal,
-  val retailerOption: List<RetailerOption>
+  val modelKitId: Int,
+  var bestTotalPrice: BigDecimal,
+  val retailerOptions: MutableList<RetailerOption>
 )

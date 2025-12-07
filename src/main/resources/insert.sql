@@ -38,3 +38,17 @@ VALUES
 	1,
 	'https://www.usagundamstore.com/cdn/shop/files/GMaABHwlagapyl1d_1100x.jpg?v=1758550130'
 )
+
+
+INSERT INTO MODELKITPRICES(
+	model_kit_id,
+    retailer_id,
+    name,
+    available,
+    sub_total_price,
+    tax_price,
+    total_price
+)
+VALUES
+(1,1,'Gundam Planet',true,25.99,9.99,35.98),
+(1,2,'Galactic Toys',true,24.99,9.99,34.98)

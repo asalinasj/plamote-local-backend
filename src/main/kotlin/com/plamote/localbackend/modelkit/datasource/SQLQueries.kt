@@ -10,9 +10,7 @@ val SELECT_MODEL_KIT_IMAGES = """
   ON A.id = B.model_kit_id
 """.trimIndent()
 
-val SELECT_MODEL_KIT_RETAILERS = """
+val SELECT_MODEL_KIT_RETAILER_PRICES = """
   SELECT model_kit_id, retailer_id, name, available, sub_total_price, tax_price, total_price
-  FROM MODELKITPRICES A
-  JOIN MODELKITRETAILER B
-  ON A.retailer_id = B.id
+  FROM MODELKITPRICES
 """.trimIndent()
