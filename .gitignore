@@ -16,8 +16,14 @@ local.properties
 .recommenders
 .kotlin
 
-build/
+build/scripts/
+build/kotlin/
+build/classes/
+build/reports/
+build/resources/
+build/test-results/
 
+.idea/vcs.xml
 
 # External tool builders
 .externalToolBuilders/
