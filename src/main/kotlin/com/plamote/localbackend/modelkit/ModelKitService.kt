@@ -1,6 +1,6 @@
 package com.plamote.localbackend.modelkit
 
-import com.plamote.localbackend.modelkit.model.ModelKit
+import com.plamote.localbackend.modelkit.model.v0.ModelKit
 
 class ModelKitService(
   private val repository: ModelKitRepository

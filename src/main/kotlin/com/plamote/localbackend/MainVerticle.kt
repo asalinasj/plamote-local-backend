@@ -15,7 +15,7 @@ class MainVerticle : CoroutineVerticle() {
   private lateinit var modelKitRepository: ModelKitRepository
   private lateinit var modelKitService: ModelKitService
 
-  /* TODO original impl using VerticleBase(), CoroutineVerticle() eliminates init() method
+  /* TODO original impl was using VerticleBase(), CoroutineVerticle() eliminates init() method
   override fun init(vertx: Vertx, context: Context?) {
     super.init(vertx, context)
     modelKitDatasource = ModelKitDatasource(vertx)

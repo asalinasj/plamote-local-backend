@@ -1,4 +1,4 @@
-package com.plamote.localbackend.modelkit.model
+package com.plamote.localbackend.modelkit.model.v0
 
 import java.math.BigDecimal
 

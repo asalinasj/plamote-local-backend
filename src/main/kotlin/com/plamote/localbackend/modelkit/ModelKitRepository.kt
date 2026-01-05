@@ -1,9 +1,9 @@
 package com.plamote.localbackend.modelkit
 
 import com.plamote.localbackend.modelkit.datasource.ModelKitDatasource
-import com.plamote.localbackend.modelkit.model.ModelKit
-import com.plamote.localbackend.modelkit.model.ModelKitPrices
-import com.plamote.localbackend.modelkit.model.RetailerOption
+import com.plamote.localbackend.modelkit.model.v0.ModelKit
+import com.plamote.localbackend.modelkit.model.v0.ModelKitPrices
+import com.plamote.localbackend.modelkit.model.v0.RetailerOption
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

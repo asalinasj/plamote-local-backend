@@ -1,4 +1,4 @@
-package com.plamote.localbackend.modelkit.model
+package com.plamote.localbackend.modelkit.model.v0
 
 data class ModelKit(
   val id: Int,
