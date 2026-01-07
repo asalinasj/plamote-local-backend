@@ -4,13 +4,51 @@ import com.plamote.localbackend.modelkit.datasource.ModelKitDatasource
 import com.plamote.localbackend.modelkit.model.v0.ModelKit
 import com.plamote.localbackend.modelkit.model.v0.ModelKitPrices
 import com.plamote.localbackend.modelkit.model.v0.RetailerOption
+import com.plamote.localbackend.modelkit.model.v1.Product
+import com.plamote.localbackend.modelkit.model.v1.ProductRetailer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ModelKitRepository(
   private val datasource: ModelKitDatasource
 ) {
-  suspend fun getModelKits(): MutableMap<Int, ModelKit> = withContext(Dispatchers.IO) {
+
+  suspend fun getProducts(): MutableMap<Int, Product> = withContext(Dispatchers.IO) {
+    val res = mutableMapOf<Int, Product>()
+    val productsRetailers = getProductsRetailers()
+    println(productsRetailers)
+    res
+  }
+
+  suspend fun getProductsRetailers(): MutableList<ProductRetailer> = withContext(Dispatchers.IO) {
+    val res = mutableListOf<ProductRetailer>()
+    val productsRetailers = datasource.selectProductsCurrentData().await()
+    productsRetailers.forEach { r ->
+      val inStock = r.getInteger("in_stock")
+      val productRetailer = ProductRetailer(
+        r.getString("product_id"),
+        r.getString("site_id"),
+        r.getBigDecimal("amount"),
+        r.getString("currency"),
+        inStock == 1,
+        r.getLocalDateTime("scraped_at"),
+        r.getString("product_url"),
+        r.getString("name"),
+        r.getString("type"),
+        r.getString("base_url"),
+        r.getLocalDateTime("created_at")
+      )
+      res.add(productRetailer)
+    }
+    res
+  }
+
+  suspend fun getProductsImages(): MutableMap<Int, String> = withContext(Dispatchers.IO) {
+    val res = mutableMapOf<Int, String>()
+    res
+  }
+
+   suspend fun getModelKits(): MutableMap<Int, ModelKit> = withContext(Dispatchers.IO) {
     val res = mutableMapOf<Int, ModelKit>()
     val modelKits = datasource.selectModelKitsQuery().await()
     modelKits.forEach { r ->
@@ -49,7 +87,6 @@ class ModelKitRepository(
         modelKit.prices!!.retailerOptions.add(r)
       }
     }
-
 
     res
   }

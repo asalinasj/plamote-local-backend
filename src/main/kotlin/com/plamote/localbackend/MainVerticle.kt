@@ -68,6 +68,16 @@ class MainVerticle : CoroutineVerticle() {
       }
     }
 
+    router.get("/modelkitproducts").handler { ctx ->
+      launch {
+        val result = modelKitService.getModelKitProducts()
+        val json = JsonArray(result)
+        ctx.response()
+          .putHeader("content-type", "application/json")
+          .end(json.encode())
+      }
+    }
+
     vertx
       .createHttpServer()
 //      .requestHandler { req ->

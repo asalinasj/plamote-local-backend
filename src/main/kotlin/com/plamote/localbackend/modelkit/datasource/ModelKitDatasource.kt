@@ -3,6 +3,9 @@ package com.plamote.localbackend.modelkit.datasource
 import SELECT_MODEL_KITS
 import SELECT_MODEL_KIT_IMAGES
 import SELECT_MODEL_KIT_RETAILER_PRICES
+import SELECT_PRODUCTS
+import SELECT_PRODUCTS_CURRENT_DATA
+import SELECT_PRODUCTS_IMAGES
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.mysqlclient.MySQLBuilder
@@ -14,6 +17,30 @@ import io.vertx.sqlclient.RowSet
 
 class ModelKitDatasource(private val vertx: Vertx) {
   private val client: Pool = connectDB()
+
+  fun selectProductsQuery(): Future<RowSet<Row>> {
+    val res =
+      client
+        .query(SELECT_PRODUCTS)
+        .execute()
+    return res
+  }
+
+  fun selectProductsCurrentData(): Future<RowSet<Row>> {
+    val res =
+      client
+        .query(SELECT_PRODUCTS_CURRENT_DATA)
+        .execute()
+    return res
+  }
+
+  fun selectProductsImages(): Future<RowSet<Row>> {
+    val res =
+      client
+        .query(SELECT_PRODUCTS_IMAGES)
+        .execute()
+    return res
+  }
 
   fun selectModelKitsQuery(): Future<RowSet<Row>> {
     val res =
