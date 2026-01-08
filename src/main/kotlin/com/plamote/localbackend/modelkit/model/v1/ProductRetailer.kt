@@ -1,7 +1,7 @@
 package com.plamote.localbackend.modelkit.model.v1
 
 import java.math.BigDecimal
-import java.time.LocalDateTime
+import java.time.Instant
 
 data class ProductRetailer(
   val productId: String,
@@ -9,10 +9,10 @@ data class ProductRetailer(
   val amount: BigDecimal,
   val currency: String,
   val inStock: Boolean,
-  val scrapedAt: LocalDateTime,
+  val scrapedAt: Instant,
   val productUrl: String,
   val siteName: String,
   val siteType: String,
   val baseUrl: String,
-  val createdAt: LocalDateTime
+  val createdAt: Instant
 )

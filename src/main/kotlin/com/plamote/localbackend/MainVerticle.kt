@@ -44,12 +44,18 @@ class MainVerticle : CoroutineVerticle() {
       .allowedHeader("accept")
     )
 
+    /**
+     * dummy API
+     */
     router.get("/hello").handler { rtx ->
       rtx.response()
         .putHeader("content-type", "text/plain")
         .end("Hello for Vert.x - Testing /hello")
     }
 
+    /**
+     * TEST API
+     */
     router.get("/modelkits/:id").handler { rtx ->
       val productId = rtx.request().getParam("id")
       rtx.response()
@@ -57,6 +63,9 @@ class MainVerticle : CoroutineVerticle() {
         .end("Model Kit User ID: $productId")
     }
 
+    /**
+     * V0 API
+     */
     router.get("/modelkits").handler { ctx ->
       launch {
         val result = modelKitService.getModelKits()
@@ -68,6 +77,9 @@ class MainVerticle : CoroutineVerticle() {
       }
     }
 
+    /**
+     * V1 API
+     */
     router.get("/modelkitproducts").handler { ctx ->
       launch {
         val result = modelKitService.getModelKitProducts()

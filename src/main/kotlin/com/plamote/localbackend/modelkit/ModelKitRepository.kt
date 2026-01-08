@@ -8,15 +8,54 @@ import com.plamote.localbackend.modelkit.model.v1.Product
 import com.plamote.localbackend.modelkit.model.v1.ProductRetailer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.ZoneOffset
 
 class ModelKitRepository(
   private val datasource: ModelKitDatasource
 ) {
 
-  suspend fun getProducts(): MutableMap<Int, Product> = withContext(Dispatchers.IO) {
-    val res = mutableMapOf<Int, Product>()
+  suspend fun getProducts(): MutableMap<String, Product> = withContext(Dispatchers.IO) {
+    val res = mutableMapOf<String, Product>()
+
     val productsRetailers = getProductsRetailers()
-    println(productsRetailers)
+
+    val productsImages = getProductsImages()
+
+    val products = datasource.selectProducts().await()
+    products.forEach { r ->
+      val productId = r.getString("id")
+      val inStock = r.getInteger("in_stock")
+      val product = Product(
+        id = productId,
+        name = r.getString("name"),
+        brand = r.getString("brand"),
+        series = r.getString("series"),
+        scale = r.getString("scale"),
+        sku = r.getString("sku"),
+        inStock = inStock == 1,
+        lastChecked = r.getLocalDateTime("last_checked").toInstant(ZoneOffset.UTC),
+        createdAt = r.getLocalDateTime("created_at").toInstant(ZoneOffset.UTC),
+        updatedAt = r.getLocalDateTime("updated_at").toInstant(ZoneOffset.UTC)
+      )
+      res.put(productId, product)
+    }
+
+    productsRetailers.forEach { p ->
+      val product = res[p.productId]
+      if(product != null && product.id == p.productId) {
+        product.productRetailers.add(p)
+        res.put(product.id, product)
+      }
+    }
+
+    productsImages.forEach { p ->
+      val product = res[p.key]
+      if(product != null) {
+        product.images = p.value
+        res.put(product.id, product)
+      }
+    }
+
     res
   }
 
@@ -26,25 +65,40 @@ class ModelKitRepository(
     productsRetailers.forEach { r ->
       val inStock = r.getInteger("in_stock")
       val productRetailer = ProductRetailer(
-        r.getString("product_id"),
-        r.getString("site_id"),
-        r.getBigDecimal("amount"),
-        r.getString("currency"),
-        inStock == 1,
-        r.getLocalDateTime("scraped_at"),
-        r.getString("product_url"),
-        r.getString("name"),
-        r.getString("type"),
-        r.getString("base_url"),
-        r.getLocalDateTime("created_at")
+        productId = r.getString("product_id"),
+        siteId = r.getString("site_id"),
+        amount = r.getBigDecimal("amount"),
+        currency = r.getString("currency"),
+        inStock = inStock == 1,
+        scrapedAt = r.getLocalDateTime("scraped_at").toInstant(ZoneOffset.UTC),
+        productUrl = r.getString("product_url"),
+        siteName = r.getString("name"),
+        siteType = r.getString("type"),
+        baseUrl = r.getString("base_url"),
+        createdAt = r.getLocalDateTime("created_at").toInstant(ZoneOffset.UTC)
       )
       res.add(productRetailer)
     }
     res
   }
 
-  suspend fun getProductsImages(): MutableMap<Int, String> = withContext(Dispatchers.IO) {
-    val res = mutableMapOf<Int, String>()
+  suspend fun getProductsImages(): MutableMap<String, MutableList<String>> = withContext(Dispatchers.IO) {
+    val res = mutableMapOf<String, MutableList<String>>()
+    val productsImages = datasource.selectProductsImages().await()
+    productsImages.forEach { r ->
+      val productId = r.getString("product_id")
+      val imageUrl = r.getString("image_url")
+      if(res.keys.contains(productId)) {
+        val images = res[productId]
+        images?.add(imageUrl)
+        if (images != null) {
+          res.put(productId, images)
+        }
+      } else {
+        val images = mutableListOf(imageUrl)
+        res.put(productId, images)
+      }
+    }
     res
   }
 

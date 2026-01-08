@@ -18,7 +18,7 @@ import io.vertx.sqlclient.RowSet
 class ModelKitDatasource(private val vertx: Vertx) {
   private val client: Pool = connectDB()
 
-  fun selectProductsQuery(): Future<RowSet<Row>> {
+  fun selectProducts(): Future<RowSet<Row>> {
     val res =
       client
         .query(SELECT_PRODUCTS)

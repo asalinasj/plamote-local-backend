@@ -39,8 +39,11 @@ dependencies {
   implementation("io.vertx:vertx-lang-kotlin-coroutines:5.0.5")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
+
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
+
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
