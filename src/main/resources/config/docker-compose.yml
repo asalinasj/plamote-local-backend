@@ -1,0 +1,15 @@
+version: '3.8' # Or a newer version
+services:
+  mysqldb:
+    image: mysql:8.0 # Specify the MySQL version
+    container_name: mysql-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: docker # Replace with a strong password
+      MYSQL_DATABASE: plamote # Optional: default database
+      MYSQL_USER: admin # Optional: create a user
+      MYSQL_PASSWORD: docker # Optional: password for the user
+    ports:
+      - "3306:3306" # Map host port 3306 to container port 3306
+    volumes:
+      - /var/lib/mysql # Persistent data volume

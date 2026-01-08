@@ -1,4 +1,4 @@
-= Local Backend
+= Local Backend for Plamote website
 
 image:https://img.shields.io/badge/vert.x-5.0.5-purple.svg[link="https://vertx.io"]
 
@@ -27,5 +27,23 @@ To run your application:
 * https://stackoverflow.com/questions/tagged/vert.x?sort=newest&pageSize=15[Vert.x Stack Overflow]
 * https://groups.google.com/forum/?fromgroups#!forum/vertx[Vert.x User Group]
 * https://discord.gg/6ry7aqPWXy[Vert.x Discord]
+
+## API Documentation
+Review OpenAPI specs at [Swagger UI](https://editor.swagger.io/?_gl=1*riq2aa*_gcl_au*MTY1MjkyMjE4Ny4xNzY1NzM2NTAz)
+
+## Local Setup & Development
+1. Clone repository into your local
+2. Ensure you have Java 11+, Gradle, Docker, MySQLWorkBench installed
+3. Run `./gradlew clean build` to fetch dependencies and build the project
+5. Run `docker-compose -f src/main/resources/config/docker-compose.yml up -d` to start local database
+6. Open MySQLWorkBench and connect to local database using following credentials:
+  * Hostname: localhost
+  * Port: 3306
+  * Username: admin
+  * Password: docker
+7. Use the MySQLWorkBench to run the SQL script located at `src/main/resources/config/db/v1/init.sql` to create the necessary database schema and tables
+8. Use the MySQLWorkBench to run the SQL script located at `src/main/resources/config/db/v1/insert.sql` to populate the database with initial data
+9. Run `./gradlew clean run` to start the application
+10. Access the application at `http://localhost:8888` using Postman and test the endpoints as per the API documentation
 
 

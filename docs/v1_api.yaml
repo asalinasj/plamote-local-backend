@@ -1,0 +1,138 @@
+openapi: 3.0.3
+info:
+  title: Model Kit Products API
+  description: API for retrieving model kit products.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8888
+    description: Local development server
+paths:
+  /modelkitproducts:
+    get:
+      summary: Retrieve a list of model kit products
+      description: Returns a list of products with their details, including retailers and images.
+      operationId: getModelKitProducts
+      responses:
+        '200':
+          description: A JSON array of model kit products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Unique identifier for the product.
+                      example: "12345"
+                    name:
+                      type: string
+                      description: Name of the product.
+                      example: "Gundam RX-78-2"
+                    brand:
+                      type: string
+                      description: Brand of the product.
+                      example: "Bandai"
+                    grade:
+                      type: string
+                      description: Grade of the product.
+                      example: "RG"
+                    series:
+                      type: string
+                      description: Series of the product.
+                      example: "Universal Century"
+                    scale:
+                      type: string
+                      description: Scale of the product.
+                      example: "1/144"
+                    sku:
+                      type: string
+                      description: Stock Keeping Unit identifier.
+                      example: "SKU12345"
+                    inStock:
+                      type: boolean
+                      description: Whether the product is in stock.
+                      example: true
+                    lastChecked:
+                      type: string
+                      format: date-time
+                      description: The last time the stock status was checked.
+                      example: "2023-10-01T12:00:00Z"
+                    createdAt:
+                      type: string
+                      format: date-time
+                      description: The creation timestamp of the product.
+                      example: "2023-09-01T12:00:00Z"
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      description: The last update timestamp of the product.
+                      example: "2023-10-01T12:00:00Z"
+                    bestPrice:
+                      type: number
+                      format: double
+                      description: The best price available for the product.
+                      example: 29.99
+                    productRetailers:
+                      type: array
+                      description: List of retailers offering the product.
+                      items:
+                        type: object
+                        properties:
+                          productId:
+                            type: string
+                            description: ID of the product.
+                            example: "12345"
+                          siteId:
+                            type: string
+                            description: ID of the retailer site.
+                            example: "site123"
+                          amount:
+                            type: number
+                            format: double
+                            description: Price of the product at the retailer.
+                            example: 29.99
+                          currency:
+                            type: string
+                            description: Currency of the price.
+                            example: "USD"
+                          inStock:
+                            type: boolean
+                            description: Whether the product is in stock at the retailer.
+                            example: true
+                          scrapedAt:
+                            type: string
+                            format: date-time
+                            description: The timestamp when the data was scraped.
+                            example: "2023-10-01T12:00:00Z"
+                          productUrl:
+                            type: string
+                            description: URL of the product on the retailer's site.
+                            example: "https://example.com/product/12345"
+                          siteName:
+                            type: string
+                            description: Name of the retailer site.
+                            example: "Retailer A"
+                          siteType:
+                            type: string
+                            description: Type of the retailer site.
+                            example: "Online"
+                          baseUrl:
+                            type: string
+                            description: Base URL of the retailer site.
+                            example: "https://example.com"
+                          createdAt:
+                            type: string
+                            format: date-time
+                            description: The creation timestamp of the retailer data.
+                            example: "2023-09-01T12:00:00Z"
+                    images:
+                      type: array
+                      description: List of image URLs for the product.
+                      items:
+                        type: string
+                        format: uri
+                        example: "https://example.com/images/product1.jpg"
+        '500':
+          description: Internal server error
