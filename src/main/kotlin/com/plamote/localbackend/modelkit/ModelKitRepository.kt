@@ -59,6 +59,39 @@ class ModelKitRepository(
     res
   }
 
+suspend fun getProduct(id: String): Product? = withContext(Dispatchers.IO) {
+
+    val row = datasource.selectProduct(id).await() ?: return@withContext null
+
+    val inStock = row.getInteger("in_stock")
+    val product = Product(
+        id = row.getString("id"),
+        name = row.getString("name"),
+        brand = row.getString("brand"),
+        series = row.getString("series"),
+        scale = row.getString("scale"),
+        sku = row.getString("sku"),
+        inStock = inStock == 1,
+        lastChecked = row.getLocalDateTime("last_checked").toInstant(ZoneOffset.UTC),
+        createdAt = row.getLocalDateTime("created_at").toInstant(ZoneOffset.UTC),
+        updatedAt = row.getLocalDateTime("updated_at").toInstant(ZoneOffset.UTC)
+    )
+
+    // Attach retailers for this product only
+    val productsRetailers = getProductsRetailers()
+    productsRetailers.filter { it.productId == id }.forEach {
+        product.productRetailers.add(it)
+    }
+
+    // Attach images for this product only
+    val productsImages = getProductsImages()
+    productsImages[id]?.let { product.images = it }
+
+    product
+}
+
+
+
   suspend fun getProductsRetailers(): MutableList<ProductRetailer> = withContext(Dispatchers.IO) {
     val res = mutableListOf<ProductRetailer>()
     val productsRetailers = datasource.selectProductsCurrentData().await()

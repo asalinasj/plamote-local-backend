@@ -5,6 +5,8 @@ import com.plamote.localbackend.modelkit.ModelKitService
 import com.plamote.localbackend.modelkit.datasource.ModelKitDatasource
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.json.JsonArray
+import io.vertx.core.json.JsonObject
+
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
@@ -89,6 +91,33 @@ class MainVerticle : CoroutineVerticle() {
           .end(json.encode())
       }
     }
+
+router.get("/modelkitproducts/:id").handler { ctx ->
+    launch {
+        val id = ctx.pathParam("id")
+        if (id == null) {
+            ctx.response()
+                .setStatusCode(400)
+                .end("Missing id")
+            return@launch
+        }
+
+        val result = modelKitService.getModelKitProduct(id)
+        if (result == null) {
+            ctx.response()
+                .setStatusCode(404)
+                .end("Product not found")
+            return@launch
+        }
+
+        val json = JsonObject.mapFrom(result)
+        ctx.response()
+            .putHeader("content-type", "application/json")
+            .end(json.encode())
+    }
+}
+
+
 
     vertx
       .createHttpServer()
