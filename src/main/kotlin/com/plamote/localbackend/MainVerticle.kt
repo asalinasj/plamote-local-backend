@@ -9,6 +9,9 @@ import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import kotlinx.coroutines.launch
+import com.google.gson.GsonBuilder
+import com.plamote.localbackend.gson.InstantAdapter
+import java.time.Instant
 
 class MainVerticle : CoroutineVerticle() {
   private lateinit var modelKitDatasource: ModelKitDatasource
@@ -29,6 +32,7 @@ class MainVerticle : CoroutineVerticle() {
     modelKitDatasource.connectDB()
     modelKitRepository = ModelKitRepository(modelKitDatasource)
     modelKitService = ModelKitService(modelKitRepository)
+    val gson = GsonBuilder().registerTypeAdapter(Instant::class.java, InstantAdapter()).create()
 
     val router = Router.router(vertx)
     router.route().handler(CorsHandler.create()
@@ -44,12 +48,18 @@ class MainVerticle : CoroutineVerticle() {
       .allowedHeader("accept")
     )
 
+    /**
+     * dummy API
+     */
     router.get("/hello").handler { rtx ->
       rtx.response()
         .putHeader("content-type", "text/plain")
         .end("Hello for Vert.x - Testing /hello")
     }
 
+    /**
+     * TEST API
+     */
     router.get("/modelkits/:id").handler { rtx ->
       val productId = rtx.request().getParam("id")
       rtx.response()
@@ -57,6 +67,9 @@ class MainVerticle : CoroutineVerticle() {
         .end("Model Kit User ID: $productId")
     }
 
+    /**
+     * V0 API - deprecated
+     */
     router.get("/modelkits").handler { ctx ->
       launch {
         val result = modelKitService.getModelKits()
@@ -65,6 +78,21 @@ class MainVerticle : CoroutineVerticle() {
         ctx.response()
           .putHeader("content-type", "application/json")
           .end(json.encode())
+      }
+    }
+
+    /**
+     * V1 API
+     */
+    router.get("/modelkitproducts").handler { ctx ->
+      launch {
+        val result = modelKitService.getModelKitProducts()
+//        val json = JsonArray(result)
+        // gson is needed to return map as JSON object/map instead of array
+        val json = gson.toJson(result)
+        ctx.response()
+          .putHeader("content-type", "application/json")
+          .end(json)
       }
     }
 

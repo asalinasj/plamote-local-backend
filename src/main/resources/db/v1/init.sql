@@ -1,0 +1,46 @@
+CREATE TABLE PRODUCTS (
+	id CHAR(36) NOT NULL PRIMARY KEY,
+    name VARCHAR(500) NOT NULL,
+    brand VARCHAR(100) NOT NULL,
+    series VARCHAR(100) NOT NULL,
+    scale VARCHAR(50) NOT NULL,
+    sku VARCHAR(100) NOT NULL,
+    in_stock BOOLEAN NOT NULL,
+    last_checked TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE CURRENT_DATA (
+	id CHAR(36) NOT NULL PRIMARY KEY,
+    product_id CHAR(36) NOT NULL,
+    site_id CHAR(36) NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    currency CHAR(3) NOT NULL,
+    in_stock BOOLEAN NOT NULL,
+    scraped_at TIMESTAMP NOT NULL,
+    FOREIGN KEY(product_id) REFERENCES PRODUCTS(id),
+    FOREIGN KEY(site_id) REFERENCES SITES(id)
+);
+
+CREATE TABLE SITE_LINKS (
+	id CHAR(36) NOT NULL PRIMARY KEY,
+    product_id CHAR(36) NOT NULL,
+    site_id CHAR(36) NOT NULL,
+    FOREIGN KEY(product_id) REFERENCES PRODUCTS(id),
+    FOREIGN KEY(site_id) REFERENCES SITES(id),
+    product_url TEXT NOT NULL
+);
+
+CREATE TABLE SITES (
+	id CHAR(36) NOT NULL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    base_url VARCHAR(255) NOT NULL,
+	created_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE PRODUCTS_IMAGES(
+	product_id CHAR(36) NOT NULL,
+    image_url TEXT NOT NULL
+)
