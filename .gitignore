@@ -16,6 +16,7 @@ local.properties
 .recommenders
 .kotlin
 
+build/
 build/scripts/
 build/kotlin/
 build/classes/

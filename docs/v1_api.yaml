@@ -2,33 +2,33 @@ openapi: 3.0.3
 info:
   title: Model Kit Products API
   description: API for retrieving model kit products.
-  version: 1.0.0
+  version: 1.2.0
 servers:
   - url: http://localhost:8888
     description: Local development server
 paths:
   /modelkitproducts:
     get:
-      summary: Retrieve a list of model kit products
-      description: Returns a list of products with their details, including retailers and images.
+      summary: Retrieve a dictionary/map of model kit products
+      description: Returns a dictionary where the keys are product IDs and the values are product details, including retailers and images.
       operationId: getModelKitProducts
       responses:
         '200':
-          description: A JSON array of model kit products
+          description: A JSON object (map) of model kit products
           content:
             application/json:
               schema:
-                type: array
-                items:
+                type: object
+                additionalProperties:
                   type: object
                   properties:
                     id:
                       type: string
                       description: Unique identifier for the product.
                       example: "12345"
-                    name:
+                    title:
                       type: string
-                      description: Name of the product.
+                      description: Title of the product.
                       example: "Gundam RX-78-2"
                     brand:
                       type: string
@@ -69,10 +69,10 @@ paths:
                       format: date-time
                       description: The last update timestamp of the product.
                       example: "2023-10-01T12:00:00Z"
-                    bestPrice:
+                    bestTotalPrice:
                       type: number
                       format: double
-                      description: The best price available for the product.
+                      description: The best total price available for the product.
                       example: 29.99
                     productRetailers:
                       type: array
@@ -110,11 +110,11 @@ paths:
                             type: string
                             description: URL of the product on the retailer's site.
                             example: "https://example.com/product/12345"
-                          siteName:
+                          name:
                             type: string
                             description: Name of the retailer site.
                             example: "Retailer A"
-                          siteType:
+                          type:
                             type: string
                             description: Type of the retailer site.
                             example: "Online"

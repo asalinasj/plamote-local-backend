@@ -5,7 +5,7 @@ import java.time.Instant
 
 data class Product(
   val id: String,
-  val name: String,
+  val title: String,
   val brand: String,
   val grade: String = "RG",
   val series: String,
@@ -15,7 +15,7 @@ data class Product(
   val lastChecked: Instant,
   val createdAt: Instant,
   val updatedAt: Instant,
-  val bestPrice: BigDecimal = BigDecimal("0.00"),
+  val bestTotalPrice: BigDecimal = BigDecimal("0.00"),
   val productRetailers: MutableList<ProductRetailer> = mutableListOf(),
   var images: MutableList<String> = mutableListOf(),
 )
