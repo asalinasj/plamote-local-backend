@@ -40,6 +40,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
+  implementation("com.google.code.gson:gson:2.13.2")
 
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")

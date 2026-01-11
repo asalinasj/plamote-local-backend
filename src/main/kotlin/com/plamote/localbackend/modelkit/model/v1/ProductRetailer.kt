@@ -11,8 +11,8 @@ data class ProductRetailer(
   val inStock: Boolean,
   val scrapedAt: Instant,
   val productUrl: String,
-  val siteName: String,
-  val siteType: String,
+  val name: String,
+  val type: String,
   val baseUrl: String,
   val createdAt: Instant
 )

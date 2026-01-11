@@ -19,10 +19,10 @@ class ModelKitService(
   /**
    * V1 API - Current version w/ new DB design
    */
-  suspend fun getModelKitProducts(): List<Product> {
+  suspend fun getModelKitProducts(): MutableMap<String, Product> {
     val map = repository.getProducts()
-    val products = map.map { it.value }
-    return products
+    val products = map.map { it.value } // can discuss returning list or map
+    return map
   }
 
     suspend fun getModelKitProduct(id: String): Product? {

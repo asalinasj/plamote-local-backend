@@ -8,6 +8,7 @@ import com.plamote.localbackend.modelkit.model.v1.Product
 import com.plamote.localbackend.modelkit.model.v1.ProductRetailer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
 import java.time.ZoneOffset
 
 class ModelKitRepository(
@@ -27,7 +28,7 @@ class ModelKitRepository(
       val inStock = r.getInteger("in_stock")
       val product = Product(
         id = productId,
-        name = r.getString("name"),
+        title = r.getString("name"),
         brand = r.getString("brand"),
         series = r.getString("series"),
         scale = r.getString("scale"),
@@ -43,8 +44,14 @@ class ModelKitRepository(
     productsRetailers.forEach { p ->
       val product = res[p.productId]
       if(product != null && product.id == p.productId) {
+        val currentBestPrice = product.bestTotalPrice
+        if(p.amount < currentBestPrice || currentBestPrice == BigDecimal("0.00")) {
+          val updatedProduct = product.copy(bestTotalPrice = p.amount)
+          res.put(product.id, updatedProduct)
+        } else {
+          res.put(product.id, product)
+        }
         product.productRetailers.add(p)
-        res.put(product.id, product)
       }
     }
 
@@ -105,8 +112,8 @@ suspend fun getProduct(id: String): Product? = withContext(Dispatchers.IO) {
         inStock = inStock == 1,
         scrapedAt = r.getLocalDateTime("scraped_at").toInstant(ZoneOffset.UTC),
         productUrl = r.getString("product_url"),
-        siteName = r.getString("name"),
-        siteType = r.getString("type"),
+        name = r.getString("name"),
+        type = r.getString("type"),
         baseUrl = r.getString("base_url"),
         createdAt = r.getLocalDateTime("created_at").toInstant(ZoneOffset.UTC)
       )
