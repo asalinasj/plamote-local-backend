@@ -23,6 +23,10 @@ val SELECT_PRODUCTS = """
   SELECT * FROM PRODUCTS
 """.trimIndent()
 
+val SELECT_PRODUCT = """
+  SELECT * FROM PRODUCTS WHERE id = ?
+""".trimIndent()
+
 val SELECT_PRODUCTS_CURRENT_DATA = """
   SELECT A.product_id, A.site_id, amount, currency, in_stock, scraped_at, product_url, name, type, base_url, created_at
   FROM CURRENT_DATA A
