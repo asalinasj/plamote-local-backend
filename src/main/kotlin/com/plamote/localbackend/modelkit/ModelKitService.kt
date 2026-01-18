@@ -24,4 +24,9 @@ class ModelKitService(
     val products = map.map { it.value } // can discuss returning list or map
     return map
   }
+
+    suspend fun getModelKitProduct(id: String): Product? {
+    val productReturned = repository.getProduct(id)
+    return productReturned
+  }
 }

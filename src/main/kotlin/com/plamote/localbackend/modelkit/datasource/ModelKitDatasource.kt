@@ -4,6 +4,7 @@ import SELECT_MODEL_KITS
 import SELECT_MODEL_KIT_IMAGES
 import SELECT_MODEL_KIT_RETAILER_PRICES
 import SELECT_PRODUCTS
+import SELECT_PRODUCT
 import SELECT_PRODUCTS_CURRENT_DATA
 import SELECT_PRODUCTS_IMAGES
 import io.vertx.core.Future
@@ -13,6 +14,7 @@ import io.vertx.mysqlclient.MySQLConnectOptions
 import io.vertx.sqlclient.Pool
 import io.vertx.sqlclient.PoolOptions
 import io.vertx.sqlclient.Row
+import io.vertx.sqlclient.Tuple;
 import io.vertx.sqlclient.RowSet
 
 class ModelKitDatasource(private val vertx: Vertx) {
@@ -23,6 +25,18 @@ class ModelKitDatasource(private val vertx: Vertx) {
       client
         .query(SELECT_PRODUCTS)
         .execute()
+    return res
+  }
+
+    fun selectProduct(id: String): Future<Row?> {
+    val res =
+      client
+        .preparedQuery(SELECT_PRODUCT)
+        .execute(Tuple.of(id))
+        
+        .map {rows ->
+        rows.firstOrNull()
+        }
     return res
   }
 
