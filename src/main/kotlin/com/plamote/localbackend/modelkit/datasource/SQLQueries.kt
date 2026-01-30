@@ -27,6 +27,10 @@ val SELECT_PRODUCT = """
   SELECT * FROM PRODUCTS WHERE id = ?
 """.trimIndent()
 
+val GET_USER_PROFILE = """
+select id as user_id ,username, display_name, avatar_url from user_profiles WHERE id = ?
+""".trimIndent()
+
 val SELECT_PRODUCTS_CURRENT_DATA = """
   SELECT A.product_id, A.site_id, amount, currency, in_stock, scraped_at, product_url, name, type, base_url, created_at
   FROM CURRENT_DATA A
