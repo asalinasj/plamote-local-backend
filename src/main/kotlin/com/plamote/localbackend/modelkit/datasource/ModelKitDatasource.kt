@@ -5,6 +5,10 @@ import SELECT_MODEL_KIT_IMAGES
 import SELECT_MODEL_KIT_RETAILER_PRICES
 import SELECT_PRODUCTS
 import SELECT_PRODUCT
+import GET_USER_PROFILE
+import SELECT_USER_OWNED_KITS
+import SELECT_USER_WISHLIST_ITEMS
+import SELECT_USER_WISHLISTS
 import SELECT_PRODUCTS_CURRENT_DATA
 import SELECT_PRODUCTS_IMAGES
 import io.vertx.core.Future
@@ -28,7 +32,7 @@ class ModelKitDatasource(private val vertx: Vertx) {
     return res
   }
 
-    fun selectProduct(id: String): Future<Row?> {
+    fun selectProduct(id: Int): Future<Row?> {
     val res =
       client
         .preparedQuery(SELECT_PRODUCT)
@@ -39,6 +43,42 @@ class ModelKitDatasource(private val vertx: Vertx) {
         }
     return res
   }
+
+  fun selectUserProfile(id: Int): Future<Row?> {
+    val res =
+          client
+        .preparedQuery(GET_USER_PROFILE)
+        .execute(Tuple.of(id))
+        
+        .map {rows ->
+        rows.firstOrNull()
+        }
+    return res
+
+  }
+
+    fun selectUserOwned(id: Int): Future<RowSet<Row>> {
+    return client
+        .preparedQuery(SELECT_USER_OWNED_KITS)
+        .execute(Tuple.of(id))
+
+  }
+
+      fun selectUserWishlists(id: Int): Future<RowSet<Row>> {
+    return client
+        .preparedQuery(SELECT_USER_WISHLISTS)
+        .execute(Tuple.of(id))
+
+  }
+
+        fun selectUserWishlistsItems(userid: Int, wishlist_id: Int): Future<RowSet<Row>> {
+    return client
+        .preparedQuery(SELECT_USER_WISHLIST_ITEMS)
+        .execute(Tuple.of(userid,wishlist_id))
+
+  }
+
+
 
   fun selectProductsCurrentData(): Future<RowSet<Row>> {
     val res =
