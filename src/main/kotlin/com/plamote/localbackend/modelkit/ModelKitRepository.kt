@@ -5,7 +5,11 @@ import com.plamote.localbackend.modelkit.model.v0.ModelKit
 import com.plamote.localbackend.modelkit.model.v0.ModelKitPrices
 import com.plamote.localbackend.modelkit.model.v0.RetailerOption
 import com.plamote.localbackend.modelkit.model.v1.Product
+import com.plamote.localbackend.modelkit.model.v1.Profile
+import com.plamote.localbackend.modelkit.model.v1.UserOwnedKits
 import com.plamote.localbackend.modelkit.model.v1.ProductRetailer
+import com.plamote.localbackend.modelkit.model.v1.UserWishlists
+import com.plamote.localbackend.modelkit.model.v1.UserWishlistItems
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
@@ -15,8 +19,8 @@ class ModelKitRepository(
   private val datasource: ModelKitDatasource
 ) {
 
-  suspend fun getProducts(): MutableMap<String, Product> = withContext(Dispatchers.IO) {
-    val res = mutableMapOf<String, Product>()
+  suspend fun getProducts(): MutableMap<Int, Product> = withContext(Dispatchers.IO) {
+    val res = mutableMapOf<Int, Product>()
 
     val productsRetailers = getProductsRetailers()
 
@@ -24,7 +28,7 @@ class ModelKitRepository(
 
     val products = datasource.selectProducts().await()
     products.forEach { r ->
-      val productId = r.getString("id")
+      val productId = r.getInteger("id")
       val inStock = r.getInteger("in_stock")
       val product = Product(
         id = productId,
@@ -34,9 +38,9 @@ class ModelKitRepository(
         scale = r.getString("scale"),
         sku = r.getString("sku"),
         inStock = inStock == 1,
-        lastChecked = r.getLocalDateTime("last_checked").toInstant(ZoneOffset.UTC),
-        createdAt = r.getLocalDateTime("created_at").toInstant(ZoneOffset.UTC),
-        updatedAt = r.getLocalDateTime("updated_at").toInstant(ZoneOffset.UTC)
+        lastChecked = r.getLocalDateTime("last_checked")?.toInstant(ZoneOffset.UTC),
+        createdAt = r.getLocalDateTime("created_at")?.toInstant(ZoneOffset.UTC),
+        updatedAt = r.getLocalDateTime("updated_at")?.toInstant(ZoneOffset.UTC)
       )
       res.put(productId, product)
     }
@@ -66,22 +70,22 @@ class ModelKitRepository(
     res
   }
 
-suspend fun getProduct(id: String): Product? = withContext(Dispatchers.IO) {
+suspend fun getProduct(id: Int): Product? = withContext(Dispatchers.IO) {
 
     val row = datasource.selectProduct(id).await() ?: return@withContext null
 
     val inStock = row.getInteger("in_stock")
     val product = Product(
-        id = row.getString("id"),
+        id = row.getInteger("id"),
         title = row.getString("name"),
         brand = row.getString("brand"),
         series = row.getString("series"),
         scale = row.getString("scale"),
         sku = row.getString("sku"),
         inStock = inStock == 1,
-        lastChecked = row.getLocalDateTime("last_checked").toInstant(ZoneOffset.UTC),
-        createdAt = row.getLocalDateTime("created_at").toInstant(ZoneOffset.UTC),
-        updatedAt = row.getLocalDateTime("updated_at").toInstant(ZoneOffset.UTC)
+        lastChecked = row.getLocalDateTime("last_checked")?.toInstant(ZoneOffset.UTC),
+        createdAt = row.getLocalDateTime("created_at")?.toInstant(ZoneOffset.UTC),
+        updatedAt = row.getLocalDateTime("updated_at")?.toInstant(ZoneOffset.UTC)
     )
 
     // Attach retailers for this product only
@@ -97,23 +101,83 @@ suspend fun getProduct(id: String): Product? = withContext(Dispatchers.IO) {
     product
 }
 
+suspend fun getProfile(id: Int): Profile? = withContext(Dispatchers.IO) {
+  val row = datasource.selectUserProfile(id).await() ?: return@withContext null
+
+  val profile = Profile(
+    id = row.getInteger("user_id"),
+    username = row.getString("username"),
+    display_name = row.getString("display_name"),
+    avatar_url = row.getString("avatar_url")
+  )
+
+  profile
+
+}
+
+suspend fun getOwnedKits(id: Int): MutableMap<Int, UserOwnedKits> = withContext(Dispatchers.IO) {
+  val res = mutableMapOf<Int, UserOwnedKits>()
+  val rows = datasource.selectUserOwned(id).await() 
+  
+  rows.forEach { r ->   
+      val userOwned = UserOwnedKits(
+        id = r.getInteger("product_id"),
+        name = r.getString("name"),
+        description = r.getString("description"),
+        status = r.getString("status"),
+        quantity = r.getInteger("quantity"),
+        notes = r.getString("notes")
+  )
+  res.put(r.getInteger("product_id"), userOwned)
+  }
+
+  res
+}
+
+suspend fun getUserWishlists(id: Int): List<UserWishlists> = withContext(Dispatchers.IO) {
+    val rows = datasource.selectUserWishlists(id).await()
+
+    rows.map { r ->
+        UserWishlists(
+            name = r.getString("name"),
+            description = r.getString("description"),
+            isPublic = r.getBoolean("is_public") ?: false,
+            createdAt = r.getLocalDateTime("created_at")?.toInstant(ZoneOffset.UTC),
+            updatedAt = r.getLocalDateTime("updated_at")?.toInstant(ZoneOffset.UTC)
+        )
+    }
+}
+
+suspend fun getUserWishlistItems(userid: Int, wishlist_id: Int): List<UserWishlistItems> = withContext(Dispatchers.IO) {
+    val rows = datasource.selectUserWishlistsItems(userid, wishlist_id).await()
+
+    rows.map { r ->
+        UserWishlistItems(
+            product_id = r.getInteger("product_id"),
+            wishlist_id = r.getInteger("wishlist_id"),
+            product_name = r.getString("product_name"),
+            target_price = r.getBigDecimal("target_price"),
+            notes = r.getString("notes")
+        )
+    }
+}
+
 
 
   suspend fun getProductsRetailers(): MutableList<ProductRetailer> = withContext(Dispatchers.IO) {
     val res = mutableListOf<ProductRetailer>()
     val productsRetailers = datasource.selectProductsCurrentData().await()
     productsRetailers.forEach { r ->
-      val inStock = r.getInteger("in_stock")
+      val inStock = r.getInteger("stock_status")
       val productRetailer = ProductRetailer(
-        productId = r.getString("product_id"),
+        productId = r.getInteger("product_id"),
         siteId = r.getString("site_id"),
-        amount = r.getBigDecimal("amount"),
+        amount = r.getBigDecimal("price"),
         currency = r.getString("currency"),
         inStock = inStock == 1,
         scrapedAt = r.getLocalDateTime("scraped_at").toInstant(ZoneOffset.UTC),
         productUrl = r.getString("product_url"),
         name = r.getString("name"),
-        type = r.getString("type"),
         baseUrl = r.getString("base_url"),
         createdAt = r.getLocalDateTime("created_at").toInstant(ZoneOffset.UTC)
       )
@@ -122,11 +186,11 @@ suspend fun getProduct(id: String): Product? = withContext(Dispatchers.IO) {
     res
   }
 
-  suspend fun getProductsImages(): MutableMap<String, MutableList<String>> = withContext(Dispatchers.IO) {
-    val res = mutableMapOf<String, MutableList<String>>()
+  suspend fun getProductsImages(): MutableMap<Int, MutableList<String>> = withContext(Dispatchers.IO) {
+    val res = mutableMapOf<Int, MutableList<String>>()
     val productsImages = datasource.selectProductsImages().await()
     productsImages.forEach { r ->
-      val productId = r.getString("product_id")
+      val productId = r.getInteger("product_id")
       val imageUrl = r.getString("image_url")
       if(res.keys.contains(productId)) {
         val images = res[productId]

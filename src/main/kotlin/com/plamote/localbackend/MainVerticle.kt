@@ -6,6 +6,7 @@ import com.plamote.localbackend.modelkit.datasource.ModelKitDatasource
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
+import io.vertx.core.json.Json
 
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.CorsHandler
@@ -100,7 +101,7 @@ class MainVerticle : CoroutineVerticle() {
 
 router.get("/modelkitproducts/:id").handler { ctx ->
     launch {
-        val id = ctx.pathParam("id")
+        val id = ctx.pathParam("id")?.toIntOrNull()
         if (id == null) {
             ctx.response()
                 .setStatusCode(400)
@@ -122,6 +123,104 @@ router.get("/modelkitproducts/:id").handler { ctx ->
             .end(json.encode())
     }
 }
+
+router.get("/user/:id").handler { ctx ->
+    launch {
+        val id = ctx.pathParam("id")?.toIntOrNull()
+        if (id == null) {
+            ctx.response()
+                .setStatusCode(400)
+                .end("Missing id")
+            return@launch
+        }
+
+        val result = modelKitService.getUserProfile(id)
+        if (result == null) {
+            ctx.response()
+                .setStatusCode(404)
+                .end("Profile not found")
+            return@launch
+        }
+
+        val json = JsonObject.mapFrom(result)
+        ctx.response()
+            .putHeader("content-type", "application/json")
+            .end(json.encode())
+    }
+}
+
+router.get("/user/:id/kits").handler { ctx ->
+    launch {
+        val id = ctx.pathParam("id")?.toIntOrNull()
+        if (id == null) {
+            ctx.response()
+                .setStatusCode(400)
+                .end("Missing id")
+            return@launch
+        }
+
+        val result = modelKitService.getUserOwnedKits(id)
+        if (result == null) {
+            ctx.response()
+                .setStatusCode(404)
+                .end("Profile not found")
+            return@launch
+        }
+
+        val json = JsonObject.mapFrom(result)
+        ctx.response()
+            .putHeader("content-type", "application/json")
+            .end(json.encode())
+    }
+}
+
+router.get("/user/:id/wishlists").handler { ctx ->
+    launch {
+              val id = ctx.pathParam("id")?.toIntOrNull()
+        if (id == null) {
+            ctx.response()
+                .setStatusCode(400)
+                .end("Missing id")
+            return@launch
+        }
+      
+        val result = modelKitService.getUserWishlists(id)
+//        val json = JsonArray(result)
+        // gson is needed to return map as JSON object/map instead of array
+        val json = gson.toJson(result)
+        ctx.response()
+          .putHeader("content-type", "application/json")
+          .end(json)
+      }
+    }
+
+router.get("/user/:id/wishlist/items").handler { ctx ->
+    val userId = ctx.pathParam("id")?.toIntOrNull()
+    val wishlistId = ctx.queryParam("wishlist_id").firstOrNull()?.toIntOrNull()
+
+    if (userId == null || wishlistId == null) {
+        ctx.response()
+            .setStatusCode(400)
+            .end("Missing or invalid user_id or wishlist_id")
+        return@handler
+    }
+
+    launch {
+        try {
+            // Call your service, not the datasource directly
+            val items = modelKitService.getUserWishlistItems(userId, wishlistId)
+
+            ctx.response()
+            .putHeader("Content-Type", "application/json")
+            .end(Json.encodePrettily(items).toString())
+        } catch (e: Exception) {
+            ctx.response()
+                .setStatusCode(500)
+                .end("Error fetching wishlist items: ${e.message}")
+        }
+    }
+}
+
 
 
 

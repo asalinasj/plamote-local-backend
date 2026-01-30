@@ -1,0 +1,1 @@
+select id as user_id ,username, display_name, avatar_url from user_profiles WHERE id = 1
